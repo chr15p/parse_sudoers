@@ -1,11 +1,5 @@
-#!/usr/bin/env python
-#
-#
-# This program parses a sudoers file
+# represents a sngle decomposed rule within a suders file
 # Author: Chris Procter <cprocter@redhat.com> 16-08-2019
-#
-# with some parts based on work by Joel Heenan 30/09/2008
-# https://github.com/blentz/scripts/blob/master/ldap/parse_sudoers.py
 #
 # This software may be freely redistributed under the terms of the GNU
 # general public license.
@@ -155,38 +149,3 @@ class SudoRule:
         self.dump_ansible_type(sudorule["ipa_sudorule"], "host", '+', self.get_allowed_hosts())
         self.dump_ansible_type(sudorule["ipa_sudorule"], "user", '%', self.get_allowed_users())
         return sudorule
-
-#- ipa_sudorule:
-#    name: sudo_dev_dbserver
-#    cmdcategory: all
-#    host:
-#    - db01.example.com
-#    hostgroup:
-#    - db-server
-#    sudoopt:
-#    - '!authenticate'
-#    usergroup:
-#    - developers
-#    ipa_host: ipa.example.com
-#    ipa_user: admin
-#    ipa_pass: topsecret
-
-#    def dumpansible(self):
-#        rules = []
-#        lineno = 0
-#        for c in self.commands:
-#            lineno += 1
-#            sudorule = dict()
-#            sudorule["ipa_sudorule"] = {
-#                "ipa_host": "{{ ipa_host }}",
-#                "ipa_user": "{{ ipa_user }}",
-#                "ipa_pass": "{{ ipa_pass }}",
-#                "name": "{}-{}".format(self.rulename, lineno)
-#            }
-#
-#            self._categoryfragment(sudorule["ipa_sudorule"], "user")
-#            self._categoryfragment(sudorule["ipa_sudorule"], "host")
-#            sudorule["ipa_sudorule"].update(c.ansiblefragment())
-#            rules.append(sudorule)
-#        return rules
-#

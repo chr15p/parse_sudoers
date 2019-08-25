@@ -1,3 +1,14 @@
+# parse a single suders file into a set of decomposed rules
+# Author: Chris Procter <cprocter@redhat.com> 16-08-2019
+#
+# This software may be freely redistributed under the terms of the GNU
+# general public license.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
 import os
 import re
 
@@ -64,7 +75,6 @@ class SudoParser:
 
     def parse_rule(self, lineno, line):
 
-        #blankRE = re.compile(r"^s*$")
         userRE = re.compile(r"(?<!,)+\s+")
         cmdRE = re.compile(r" : \s*(?![^()]*\))")
         listRE = re.compile(r"\s*,\s*")
@@ -93,9 +103,7 @@ class SudoParser:
                 cmd_spec_no += 1
                 ## a command_spec_list is a comma seperated list of command_specs
                 ## a command_spec is  Runas_Spec? Option_Spec* Tag_Spec* Cmnd
-                #print("cmnd_spec_list={}".format(cmnd_spec_list))
                 cmnd_spec, cmnd_spec_list = self.parse_cmnd_spec_list(cmnd_spec_list)
-                #print("cmnd_spec={}".format(cmnd_spec))
                 runas_spec, tag_spec, cmnds = self.parse_cmnd_spec(cmnd_spec)
                 ## runas_specs and tags like NOEXEC effect all the command_spec's that come after them in the rule
                 ## so if its not set then use the previous ones
@@ -122,23 +130,6 @@ class SudoParser:
                 rule.command = [cmnds] # self.expand_aliases("cmnd",[cmnds])
                 rule.command_expanded = self.expand_aliases("cmnd",[cmnds])
                 
-                ## sort into allowed and denied
-                #users_allowed, users_denied = self.split_allowed(users)
-                #hosts_allowed, hosts_denied = self.split_allowed(hosts)
-                ## expand aliases
-                #users_exp = self.expand_aliases('user', users)
-                #hosts_exp = self.expand_aliases('host', hosts)
-                ## sort into things and groups
-                #print("{}++{}++{}++{}++{}++{}++{}++{}".format(users_allowed, users_denied, hosts_allowed, hosts_denied, runas_users, runas_groups, tag_spec, cmnds))
-                #print("users_allowed={}".format(users_allowed))
-                #print("users_denied={}".format(users_denied))
-                #print("hosts_allowed={}".format(hosts_allowed))
-                #print("hosts_denied={}".format(hosts_denied))
-                #print("runas_users={}".format(runas_users))
-                #print("runas_groups={}".format(runas_groups))
-                #print("tag_spec={}".format(tag_spec))
-                #print("cmnds={}".format(cmnds))
-
 
     def split_allowed(self, object_array):
         denied = [] 
@@ -231,15 +222,14 @@ class SudoParser:
             [command, rest_of_string or None]
         """
         #### TODO: make this work with regexp, it gets messed up by escaped commas in commands
+        # something like:
         #cmnd_specRE = re.compile(r"(?!\\),\s*(?![^()]*\))")
         #cmnd_specs = cmnd_specRE.split(cmnd_spec_list,1)
         flag = 0
         escape = 0
         i = -1
-        #print("++cmnd_spec_list={}".format(cmnd_spec_list))
         for c in cmnd_spec_list:
             i += 1
-            #print("{}={} {}".format(i,c, cmnd_spec_list[i]))
             if c == "(":
                 flag = 1
             elif c == ")":
@@ -253,19 +243,11 @@ class SudoParser:
                 escape = 0
 
         i += 1
-        #print("i={}".format(i))
         cmnd_specs = cmnd_spec_list[:i]
-        #print("cmnd_spec_list[0:{}]={}".format(i,cmnd_spec_list[0:i]))
-        #print("cmnd_spec_list[{}:]={}".format(i,cmnd_spec_list[i:]))
-        #print("{} < {}".format(i, len(cmnd_spec_list)))
         if i < len(cmnd_spec_list):
             return cmnd_spec_list[:i], cmnd_spec_list[i+1:]
         else:
             return cmnd_spec_list[:i], None
-        #if len(cmnd_specs) > 1:
-        #    return cmnd_specs
-        #else:
-        #    return [cmnd_specs[0], None]
 
 
     def parse_cmnd_spec(self, cmnd_spec):

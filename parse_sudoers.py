@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 #
-#
-# This program parses a sudoers file 
+# This program parses a sudoers file and reports the rules as either text, or ansible tasks
 # Author: Chris Procter <cprocter@redhat.com> 16-08-2019
-#
-# with some parts based on work by Joel Heenan 30/09/2008
-# https://github.com/blentz/scripts/blob/master/ldap/parse_sudoers.py
 #
 # This software may be freely redistributed under the terms of the GNU
 # general public license.
