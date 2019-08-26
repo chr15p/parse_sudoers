@@ -133,7 +133,7 @@ class SudoParser:
                 #rule.cmdgroups = [ SudoCmdGroup(c) for c in cmnds.split(",") if c in self.aliases['cmnd'].keys() ]
                 #rule.command = [ c for c in cmnds.split(",") if c not in self.aliases['cmnd'].keys() ]
                 #rule.command_expanded = [ SudoCmd(c) for c in  self.expand_aliases("cmnd", rule.command) ]
-                rule.command = cmnds.split(",") # self.expand_aliases("cmnd",[cmnds])
+                rule.command = [cmnds] # self.expand_aliases("cmnd",[cmnds])
                 rule.command_expanded = self.expand_aliases("cmnd", rule.command)
                 #for c in rule.command_expanded:
                 #    if c != "ALL":
