@@ -37,14 +37,9 @@ class AnsiblePlaybook:
             else:
                 commands.extend(rule.get_commands())
         
-        cmndtasks = [ self.dump_command(c) for c in set(commands) ]
-        #print(yaml.dump(cmndtasks, self.outputfile, default_flow_style=False, Dumper=noalias_dumper))
-
-        #print(yaml.dump(cmdgroup, self.outputfile, default_flow_style=False, Dumper=noalias_dumper))
-        #print(yaml.dump(allrules, self.outputfile, default_flow_style=False, Dumper=noalias_dumper))
+        cmndtasks = [ self.dump_command(c) for c in set(commands) if c != "ALL" ]
         if cmndtasks != []:
             print(yaml.dump(cmndtasks, default_flow_style=False, Dumper=noalias_dumper))
-
         if cmdgroup != []:
             print(yaml.dump(cmdgroup, default_flow_style=False, Dumper=noalias_dumper))
         if allrules != []:
