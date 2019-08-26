@@ -5,12 +5,12 @@ class SudoersDisplay:
         self.use_groups = use_groups 
 
     def dump(self):
-
         for a in ["user", "host", "cmnd", "runas"]:
             name = a.capitalize() + "_Alias"
+            if self.parser.aliases[a].keys() == []:
+                continue
             for obj in self.parser.aliases[a].keys():
                 print "{}\t{} = {}".format(name, obj, ",".join(self.parser.aliases[a][obj]) )
-
 
             print("")
 
@@ -30,7 +30,7 @@ class SudoersDisplay:
                 runas= "( {} )".format(runas)
 
             if rule.options != None:
-                options = ",".join(rule.options)
+                options = ",".join([o + ":" for o in rule.options])
             else:
                 options = ""
 
@@ -40,4 +40,4 @@ class SudoersDisplay:
                 command = ",".join(rule.command_expanded)
     
             
-            print "{}\t{} = {}) {} {}".format(users, hosts, runas, options, command)
+            print "{}\t{} = {} {} {}".format(users, hosts, runas, options, command)
