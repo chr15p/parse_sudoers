@@ -6,7 +6,7 @@ class AnsiblePlaybook:
     def __init__(self, sudoparser):
         self.parser = sudoparser
         self.outputfile = sys.stdout
-        self.user_groups = False
+        self.use_groups = False
 
     def isgoodipv4(s):
         pieces = s.split('.')
@@ -32,7 +32,7 @@ class AnsiblePlaybook:
         for rule in self.parser.rules:
 
             allrules.append(self.dump_sudorule(rule))
-            if self.user_groups == False:
+            if self.use_groups == False:
                 commands.extend(rule.get_command_expanded())
             else:
                 commands.extend(rule.get_commands())

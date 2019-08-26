@@ -15,6 +15,7 @@ import yaml
 from optparse import OptionParser
 from sudoparser import SudoParser
 from ansibleplay import AnsiblePlaybook
+from sudoersdisplay import SudoersDisplay
 
 def create_option_parser():
     parser = OptionParser(usage="%prog [options] -u user")
@@ -22,6 +23,8 @@ def create_option_parser():
                       help="sudoers file to parser (default /etc/sudoers)", default="/etc/sudoers")
     parser.add_option("-a", "--ansible", dest="ansible", action="store_true",
                       help="output as a set of ansible tasks")
+    parser.add_option("-s", "--sudoers", dest="sudoers", action="store_true",
+                      help="output as a sudoers file")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
                       help="Increase verbosity. Provides debugging output")
     return parser
@@ -49,6 +52,9 @@ def main():
         play = AnsiblePlaybook(sudo_parse)
         play.dump()
 
+    if options.sudoers:
+        display = SudoersDisplay(sudo_parse, False)
+        display.dump()
 
 if __name__ == "__main__":
     main()
