@@ -14,6 +14,7 @@ import re
 
 from sudorule import SudoRule
 
+
 class SudoParser:
     def __init__(self):
         self.filename = ""
@@ -22,6 +23,8 @@ class SudoParser:
         self.aliases['user'] = dict()
         self.aliases['cmnd'] = dict()
         self.aliases['runas'] = dict()
+
+        self.commands = dict()
 
         self.rules = []
 
@@ -127,29 +130,36 @@ class SudoParser:
                 rule.runas_user = self.expand_aliases("runas",runas_users) #runas_users
                 rule.runas_group =self.expand_aliases("runas",runas_groups)  #runas_groups
                 rule.options = tag_spec
-                rule.command = [cmnds] # self.expand_aliases("cmnd",[cmnds])
-                rule.command_expanded = self.expand_aliases("cmnd",[cmnds])
-                
-
-    def split_allowed(self, object_array):
-        denied = [] 
-        allowed = []
-        for obj in object_array:
-            if obj[0] == '!':
-                denied.append(obj[1:])
-            else:
-                allowed.append(obj)
-        return allowed,denied
+                #rule.cmdgroups = [ SudoCmdGroup(c) for c in cmnds.split(",") if c in self.aliases['cmnd'].keys() ]
+                #rule.command = [ c for c in cmnds.split(",") if c not in self.aliases['cmnd'].keys() ]
+                #rule.command_expanded = [ SudoCmd(c) for c in  self.expand_aliases("cmnd", rule.command) ]
+                rule.command = cmnds.split(",") # self.expand_aliases("cmnd",[cmnds])
+                rule.command_expanded = self.expand_aliases("cmnd", rule.command)
+                #for c in rule.command_expanded:
+                #    if c != "ALL":
+                #        self.commands[c] = SudoCmd(c)
+ 
 
     def expand_aliases(self, alias, object_array):
+        """
+        return an array with any aliases expanded out
+        input:
+            alias: the type of the alias (key of the self.aliases dict to search)
+            object_array: an array of the strings to search for alias
+        output:
+            a new array of strings with the aliases expanded
+        """
         expanded = []
         denied = 0
         if object_array == None:
             return None
         for obj in object_array:
+            ## if the alias is denied then all the expanded values should be
             if obj[0] == "!":
                 obj = obj[1:]
                 denied = 1
+
+            ## if theres an alisas expand it, if not the object can just pass through unharmed
             if self.aliases[alias].get(obj):
                 if denied == 0:
                     expanded.extend(self.aliases[alias][obj])

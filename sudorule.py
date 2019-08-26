@@ -89,7 +89,7 @@ class SudoRule:
                 if allowed == True:
                     output.append(obj)
         return output
-
+    
     def get_sudo_options(self):
         sudoopt = []
         for o in self.options:
@@ -99,6 +99,9 @@ class SudoRule:
         return sudoopt
 
     def dump(self):
+        """
+            debugging method
+        """
         print
         print("name={}".format(self.rulename))
         print("allowed_users={}".format(self.get_allowed_users()))
@@ -113,39 +116,3 @@ class SudoRule:
         print("command={}".format(self.get_command()))
         print("command_expanded={}".format(self.get_command_expanded()))
 
-
-    def dump_ansible_type(self, taskdict, objtype, groupchar, object_array):
-
-        for obj in object_array:
-            if obj == "ALL":
-                taskdict[objtype + "category"] = "all"
-                return
-            if obj[0] == groupchar:
-                if taskdict.get(objtype + "group") == None:
-                    taskdict[objtype + "group"] = []
-
-                taskdict[objtype + "group"].append(obj[1:])
-            else:
-                if taskdict.get(objtype) == None:
-                    taskdict[objtype] = []
-                taskdict[objtype].append(obj)
-
-
-    def dump_ansible(self):
-        sudorule = dict()
-        sudorule["name"] = self.rulename
-        sudorule["ipa_sudorule"] = {
-            "ipa_host": "{{ ipa_host }}",
-            "ipa_user": "{{ ipa_user }}",
-            "ipa_pass": "{{ ipa_pass }}",
-            "name": self.rulename,
-        }
-
-        opts = self.get_sudo_options()
-        if opts:
-            sudorule["ipa_sudorule"]["sudoopt"] = opts
-
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "cmd", None, self.get_command_expanded())
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "host", '+', self.get_allowed_hosts())
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "user", '%', self.get_allowed_users())
-        return sudorule

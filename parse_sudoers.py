@@ -14,6 +14,7 @@ import sys
 import yaml
 from optparse import OptionParser
 from sudoparser import SudoParser
+from ansibleplay import AnsiblePlaybook
 
 def create_option_parser():
     parser = OptionParser(usage="%prog [options] -u user")
@@ -24,55 +25,6 @@ def create_option_parser():
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
                       help="Increase verbosity. Provides debugging output")
     return parser
-
-
-def ansible_commands(parser):
-    sudocmd = dict()
-    for rule in parser.rules:
-        for cmd in rule.get_raw_command_expanded():
-            if cmd == "ALL": continue
-            sudocmd[cmd] = {
-                "name": cmd,
-                "ipa_sudocmd": {
-                    "ipa_host": "{{ ipa_host }}",
-                    "ipa_user": "{{ ipa_user }}",
-                    "ipa_pass": "{{ ipa_pass }}",
-                    "name": cmd,
-                }}
-    for v in parser.aliases['cmnd'].values():
-        for cmd in v: 
-            if cmd == "ALL": continue
-            sudocmd[cmd] = {
-                "name": cmd,
-                "ipa_sudocmd": {
-                    "ipa_host": "{{ ipa_host }}",
-                    "ipa_user": "{{ ipa_user }}",
-                    "ipa_pass": "{{ ipa_pass }}",
-                    "name": cmd,
-                }}
-    return sudocmd.values()
-
-
-def ansible_aliases(parser):
-    sudocmdgroup = dict()
-    for group in parser.aliases['cmnd'].keys():
-        sudocmdgroup[group] = {
-            "name": group,
-            "ipa_sudocmdgroup": {
-                "ipa_host": "{{ ipa_host }}",
-                "ipa_user": "{{ ipa_user }}",
-                "ipa_pass": "{{ ipa_pass }}",
-                "name": group,
-                "sudocmd": parser.aliases['cmnd'][group]
-            }}
-    return sudocmdgroup.values()
-
-
-def ansible_sudorules(parser):
-    allrules = []
-    for rule in parser.rules:
-        allrules.append(rule.dump_ansible())
-    return allrules
 
 
 def main():
@@ -94,21 +46,8 @@ def main():
             rule.dump()
 
     if options.ansible:
-        noalias_dumper = yaml.dumper.SafeDumper
-        noalias_dumper.ignore_aliases = lambda self, data: True
-
-        allcmds = ansible_commands(sudo_parse)
-        if allcmds:
-            print(yaml.dump(allcmds, default_flow_style=False, Dumper=noalias_dumper))
-
-        allaliases = ansible_aliases(sudo_parse)
-        if allaliases:
-            print(yaml.dump(allaliases, default_flow_style=False, Dumper=noalias_dumper))
-
-        allrules = ansible_sudorules(sudo_parse)
-        if allrules:
-            print(yaml.dump(allrules, default_flow_style=False, Dumper=noalias_dumper))
-
+        play = AnsiblePlaybook(sudo_parse)
+        play.dump()
 
 
 if __name__ == "__main__":
