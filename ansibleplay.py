@@ -42,10 +42,13 @@ class AnsiblePlaybook:
 
         #print(yaml.dump(cmdgroup, self.outputfile, default_flow_style=False, Dumper=noalias_dumper))
         #print(yaml.dump(allrules, self.outputfile, default_flow_style=False, Dumper=noalias_dumper))
-        print(yaml.dump(cmndtasks, default_flow_style=False, Dumper=noalias_dumper))
+        if cmndtasks != []:
+            print(yaml.dump(cmndtasks, default_flow_style=False, Dumper=noalias_dumper))
 
-        print(yaml.dump(cmdgroup, default_flow_style=False, Dumper=noalias_dumper))
-        print(yaml.dump(allrules, default_flow_style=False, Dumper=noalias_dumper))
+        if cmdgroup != []:
+            print(yaml.dump(cmdgroup, default_flow_style=False, Dumper=noalias_dumper))
+        if allrules != []:
+            print(yaml.dump(allrules, default_flow_style=False, Dumper=noalias_dumper))
         #return allrules
 
 
