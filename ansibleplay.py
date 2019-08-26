@@ -1,4 +1,5 @@
 import sys
+import re
 import yaml
 
 
@@ -8,16 +9,8 @@ class AnsiblePlaybook:
         self.outputfile = sys.stdout
         self.use_groups = False
 
-    def isgoodipv4(s):
-        pieces = s.split('.')
-        if len(pieces) != 4:
-            return False
-        try:
-            return all(0<=int(p)<256 for p in pieces)
-        except ValueError:
-             return False
-
     def dump(self):
+
         noalias_dumper = yaml.dumper.SafeDumper
         noalias_dumper.ignore_aliases = lambda self, data: True
 
@@ -26,12 +19,14 @@ class AnsiblePlaybook:
         #print(self.parser.aliases['cmnd'])
         for group,cmds in self.parser.aliases['cmnd'].items():
             cmdgroup.append(self.dump_cmdgroup(group, cmds))
-            commands.extend(cmds)
+            if cmds[0] != "!":
+                commands.extend(cmds)
 
         allrules = []
         for rule in self.parser.rules:
-
-            allrules.append(self.dump_sudorule(rule))
+            ansiblerule = self.dump_sudorule(rule) 
+            if ansiblerule != None:
+                allrules.append(ansiblerule)
             if self.use_groups == False:
                 commands.extend(rule.get_command_expanded())
             else:
@@ -44,7 +39,6 @@ class AnsiblePlaybook:
             print(yaml.dump(cmdgroup, default_flow_style=False, Dumper=noalias_dumper))
         if allrules != []:
             print(yaml.dump(allrules, default_flow_style=False, Dumper=noalias_dumper))
-        #return allrules
 
 
     def dump_command(self, cmd):
@@ -71,8 +65,10 @@ class AnsiblePlaybook:
  
 
     def dump_sudorule(self, rule):
-        #for h in rule.get_allowed_hosts():
-        #    if h 
+        hostRE = re.compile('^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$', re.IGNORECASE)
+        validhosts = [ h for h in rule.get_allowed_hosts() if hostRE.match(h)]
+        if validhosts == []:
+            return None
 
         sudorule = {
             "name":  rule.rulename,
@@ -87,18 +83,17 @@ class AnsiblePlaybook:
         if opts:
             sudorule["ipa_sudorule"]["sudoopt"] = opts
 
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "cmd", None, rule.get_command_expanded())
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "host", '+', rule.get_allowed_hosts())
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "user", '%', rule.get_allowed_users())
+        self.dump_ansible_type(sudorule["ipa_sudorule"], "cmd", "", rule.get_command_expanded())
+        self.dump_ansible_type(sudorule["ipa_sudorule"], "host", '+', validhosts)
+        self.dump_ansible_type(sudorule["ipa_sudorule"], "user", '%+', rule.get_allowed_users())
         return sudorule
 
     def dump_ansible_type(self, taskdict, objtype, groupchar, object_array):
-
         for obj in object_array:
             if str(obj) == "ALL":
                 taskdict[objtype + "category"] = "all"
                 return
-            if obj[0] == groupchar:
+            if obj[0] in groupchar:
                 if taskdict.get(objtype + "group") == None:
                     taskdict[objtype + "group"] = []
 
