@@ -10,7 +10,7 @@ with the -s option it will produce a set of highly simplified sudoers file, with
 
 
 ### examples:
-
+Output sudo rules:
 ```
 [chrisp@host parse_sudoers]$ ./parse_sudoers.py -f simple_sudoers -s
  Host_Alias      HACLUSTER = cluster1,cluster2,cluster3
@@ -19,7 +19,8 @@ with the -s option it will produce a set of highly simplified sudoers file, with
  %wheel  ALL = ( ALL )  ALL
  fencer  cluster1,cluster2,cluster3 = ( root ) NOPASSWD: /usr/bin/virsh
 ``` 
- 
+
+The same file output as ansible tasks
 ``` 
  [chrisp@host parse_sudoers]$ ./parse_sudoers.py -f simple_sudoers -a
  - ipa_sudocmd:
