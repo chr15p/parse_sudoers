@@ -1,5 +1,5 @@
 # parse_sudoers
-A tool to parse sudoers and dump out ansible tasks (and possibly other formats)
+A tool to parse existing sudoers files and write them out as ansible tasks suitable for feeding into IdM or FreeIPA (and possibly other formats)
 
 ### usage:
 `parse_sudoers -f [sudoers file] [-s | -a]`
@@ -30,6 +30,7 @@ The same file output as ansible tasks
      ipa_host: '{{ ipa_host }}'
      ipa_pass: '{{ ipa_pass }}'
      ipa_user: '{{ ipa_user }}'
+     validate_certs: False
      name: /usr/bin/virsh
    name: /usr/bin/virsh
  
@@ -39,6 +40,7 @@ The same file output as ansible tasks
      ipa_host: '{{ ipa_host }}'
      ipa_pass: '{{ ipa_pass }}'
      ipa_user: '{{ ipa_user }}'
+     validate_certs: False
      name: test_simple_sudoers.77-1.1
      user:
      - root
@@ -49,6 +51,7 @@ The same file output as ansible tasks
      ipa_host: '{{ ipa_host }}'
      ipa_pass: '{{ ipa_pass }}'
      ipa_user: '{{ ipa_user }}'
+     validate_certs: False
      name: test_simple_sudoers.84-1.1
      usergroup:
      - wheel
@@ -63,6 +66,7 @@ The same file output as ansible tasks
      ipa_host: '{{ ipa_host }}'
      ipa_pass: '{{ ipa_pass }}'
      ipa_user: '{{ ipa_user }}'
+     validate_certs: False
      name: test_simple_sudoers.100-1.1
      sudoopt:
      - '!authenticate'
