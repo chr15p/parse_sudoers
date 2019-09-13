@@ -13,9 +13,9 @@
 import sys
 import yaml
 from optparse import OptionParser
-from sudoparser import SudoParser
-from ansibleplay import AnsiblePlaybook
-from sudoersdisplay import SudoersDisplay
+from sudoparser.sudoparser import SudoParser
+from sudoparser.ansibleplay import AnsiblePlaybook
+from sudoparser.sudoersdisplay import SudoersDisplay
 
 def create_option_parser():
     parser = OptionParser(usage="%prog [options] -u user")
