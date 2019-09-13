@@ -48,13 +48,15 @@ def main():
         for rule in sudo_parse.rules:
             rule.dump()
 
-    if options.ansible:
-        play = AnsiblePlaybook(sudo_parse)
-        play.dump()
-
     if options.sudoers:
         display = SudoersDisplay(sudo_parse, False)
         display.dump()
+
+    #if options.ansible:
+    else:
+        play = AnsiblePlaybook(sudo_parse)
+        play.dump()
+
 
 if __name__ == "__main__":
     main()
