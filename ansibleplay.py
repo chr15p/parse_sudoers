@@ -48,6 +48,7 @@ class AnsiblePlaybook:
                 "ipa_host": "{{ ipa_host }}",
                 "ipa_user": "{{ ipa_user }}",
                 "ipa_pass": "{{ ipa_pass }}",
+                "validate_certs": "False",
                 "name": cmd,
             }}
  
@@ -59,6 +60,7 @@ class AnsiblePlaybook:
                 "ipa_host": "{{ ipa_host }}",
                 "ipa_user": "{{ ipa_user }}",
                 "ipa_pass": "{{ ipa_pass }}",
+                "validate_certs": "False",
                 "name": group,
                 "sudocmd": cmnds
             }}
@@ -76,6 +78,7 @@ class AnsiblePlaybook:
                 "ipa_host": "{{ ipa_host }}",
                 "ipa_user": "{{ ipa_user }}",
                 "ipa_pass": "{{ ipa_pass }}",
+                "validate_certs": "False",
                 "name": rule.rulename,
             }}
 
