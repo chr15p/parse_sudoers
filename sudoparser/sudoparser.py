@@ -12,7 +12,7 @@
 import os
 import re
 
-from sudorule import SudoRule
+from sudoparser.sudorule import SudoRule
 
 
 class SudoParser:
