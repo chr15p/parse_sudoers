@@ -10,7 +10,7 @@ class SudoersDisplay:
             if self.parser.aliases[a].keys() == []:
                 continue
             for obj in self.parser.aliases[a].keys():
-                print "{}\t{} = {}".format(name, obj, ",".join(self.parser.aliases[a][obj]) )
+                print("{}\t{} = {}".format(name, obj, ",".join(self.parser.aliases[a][obj]) ))
 
             print("")
 
@@ -40,4 +40,4 @@ class SudoersDisplay:
                 command = ",".join(rule.command_expanded)
     
             
-            print "{}\t{} = {} {} {}".format(users, hosts, runas, options, command)
+            print("{}\t{} = {} {} {}".format(users, hosts, runas, options, command))
