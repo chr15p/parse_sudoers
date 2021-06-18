@@ -1,15 +1,36 @@
 import sys
 import re
 import yaml
+from collections import OrderedDict
 
 
 class AnsiblePlaybook:
-    def __init__(self, sudoparser):
+    def __init__(self, sudoparser, description=None):
         self.parser = sudoparser
         self.outputfile = sys.stdout
         self.use_groups = False
+        self.description = description
 
     def dump(self):
+#        print(self.parser.aliases['host'])
+#        print(self.parser.aliases['runas'])
+#        print(self.parser.aliases['user'])
+#        print(self.parser.aliases['cmnd'])
+#        
+#        cmds = set()
+#        for i in self.parser.rules:
+#            cmds = cmds.union(i.get_raw_command_expanded())
+#        cmds.remove('ALL')
+#        #print(cmds)
+#        for c in cmds:
+#            #print(c)
+#            self.dump_command(c)
+#
+#        for group,commands in self.parser.aliases['cmnd'].items():
+#            print(self.dump_cmdgroup(group, commands))
+#                
+#
+#        return
 
         noalias_dumper = yaml.dumper.SafeDumper
         noalias_dumper.ignore_aliases = lambda self, data: True
@@ -34,36 +55,41 @@ class AnsiblePlaybook:
         
         cmndtasks = [ self.dump_command(c) for c in set(commands) if c != "ALL" ]
         if cmndtasks != []:
-            print(yaml.dump(cmndtasks, default_flow_style=False, Dumper=noalias_dumper))
+            print(yaml.dump(cmndtasks, sort_keys=False, default_flow_style=False, Dumper=noalias_dumper))
         if cmdgroup != []:
-            print(yaml.dump(cmdgroup, default_flow_style=False, Dumper=noalias_dumper))
+            print(yaml.dump(cmdgroup, sort_keys=False, default_flow_style=False, Dumper=noalias_dumper))
         if allrules != []:
-            print(yaml.dump(allrules, default_flow_style=False, Dumper=noalias_dumper))
+            print(yaml.dump(allrules, sort_keys=False, default_flow_style=False, Dumper=noalias_dumper))
 
 
     def dump_command(self, cmd):
-        return {
+        cmd = {
             "name": cmd,
-            "ipa_sudocmd": {
-                "ipa_host": "{{ ipa_host }}",
-                "ipa_user": "{{ ipa_user }}",
-                "ipa_pass": "{{ ipa_pass }}",
-                "validate_certs": "False",
+            "ipasudocmd": {
+                "ipaadmin_principal": "{{ ipa_user }}",
+                "ipaadmin_password": "{{ ipa_pass }}",
                 "name": cmd,
-            }}
+                "state": "present" }}
+        if self.description != None:
+            cmd["ipasudocmd"]["description"] = self.description
+        
+        return cmd
  
 
     def dump_cmdgroup(self, group, cmnds):
-        return {
+        cmdgroup = {
             "name": group,
-            "ipa_sudocmdgroup": {
-                "ipa_host": "{{ ipa_host }}",
-                "ipa_user": "{{ ipa_user }}",
-                "ipa_pass": "{{ ipa_pass }}",
-                "validate_certs": "False",
+            "ipasudocmdgroup": {
+                "ipaadmin_principal": "{{ ipa_user }}",
+                "ipaadmin_password": "{{ ipa_pass }}",
                 "name": group,
-                "sudocmd": cmnds
+                "sudocmd": cmnds,
+                "state": "present",
             }}
+        if self.description != None:
+            cmdgroup["ipasudocmdgroup"]["description"] = self.description
+
+        return cmdgroup
  
 
     def dump_sudorule(self, rule):
@@ -74,22 +100,26 @@ class AnsiblePlaybook:
 
         sudorule = {
             "name":  rule.rulename,
-            "ipa_sudorule": {
-                "ipa_host": "{{ ipa_host }}",
-                "ipa_user": "{{ ipa_user }}",
-                "ipa_pass": "{{ ipa_pass }}",
-                "validate_certs": "False",
+            "ipasudorule": {
+                "ipaadmin_principal": "{{ ipa_user }}",
+                "ipaadmin_password": "{{ ipa_pass }}",
+                "state": "present",
                 "name": rule.rulename,
             }}
 
+        if self.description != None:
+            sudorule["ipasudorule"]["description"] = self.description
+
         opts = rule.get_sudo_options()
         if opts:
-            sudorule["ipa_sudorule"]["sudoopt"] = opts
+            sudorule["ipasudorule"]["sudooption"] = opts
 
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "cmd", "", rule.get_command_expanded())
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "host", '+', validhosts)
-        self.dump_ansible_type(sudorule["ipa_sudorule"], "user", '%+', rule.get_allowed_users())
+        self.dump_ansible_type(sudorule["ipasudorule"], "cmd", "", rule.get_command_expanded())
+        self.dump_ansible_type(sudorule["ipasudorule"], "host", '+', validhosts)
+        self.dump_ansible_type(sudorule["ipasudorule"], "user", '%+', rule.get_allowed_users())
+
         return sudorule
+
 
     def dump_ansible_type(self, taskdict, objtype, groupchar, object_array):
         for obj in object_array:
@@ -97,10 +127,16 @@ class AnsiblePlaybook:
                 taskdict[objtype + "category"] = "all"
                 return
             if obj[0] in groupchar:
-                if taskdict.get(objtype + "group") == None:
-                    taskdict[objtype + "group"] = []
+                if objtype =="host":
+                    param = "hostgroup"
+                elif objtype == "user":
+                    param = "group"
+                else:
+                    param = objtype
+                if taskdict.get(param) == None:
+                    taskdict[param] = []
 
-                taskdict[objtype + "group"].append(str(obj[1:]))
+                taskdict[param].append(str(obj[1:]))
             else:
                 if taskdict.get(objtype) == None:
                     taskdict[objtype] = []

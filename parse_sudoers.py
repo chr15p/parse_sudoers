@@ -41,12 +41,14 @@ def main():
 
     sudo_parse.parseFile(options.sudoFile)
     if options.verbose:
-        print(sudo_parse.aliases["user"])
-        print(sudo_parse.aliases["host"])
-        print(sudo_parse.aliases["cmnd"])
-        print(sudo_parse.aliases["runas"])
+        #print(sudo_parse.aliases["user"])
+        #print(sudo_parse.aliases["host"])
+        #print(sudo_parse.aliases["cmnd"])
+        #print(sudo_parse.aliases["runas"])
         for rule in sudo_parse.rules:
+            print("")
             rule.dump()
+        exit(0)
 
     if options.sudoers:
         display = SudoersDisplay(sudo_parse, False)
@@ -54,7 +56,7 @@ def main():
 
     #if options.ansible:
     else:
-        play = AnsiblePlaybook(sudo_parse)
+        play = AnsiblePlaybook(sudo_parse, description="generated from %s"% options.sudoFile)
         play.dump()
 
 
