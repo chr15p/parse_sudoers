@@ -12,6 +12,7 @@
 
 import sys
 import yaml
+import os.path
 from optparse import OptionParser
 from sudoparser.sudoparser import SudoParser
 from sudoparser.ansibleplay import AnsiblePlaybook
@@ -21,6 +22,8 @@ def create_option_parser():
     parser = OptionParser(usage="%prog [options] -u user")
     parser.add_option("-f", "--file", dest="sudoFile", metavar="FILE",
                       help="sudoers file to parser (default /etc/sudoers)", default="/etc/sudoers")
+    parser.add_option("-x", "--expand", dest="expandaliases", action="store_true",
+                      help="expand aliases in rules")
     parser.add_option("-a", "--ansible", dest="ansible", action="store_true",
                       help="output as a set of ansible tasks")
     parser.add_option("-s", "--sudoers", dest="sudoers", action="store_true",
@@ -39,14 +42,16 @@ def main():
 
     sudo_parse = SudoParser()
 
-    sudo_parse.parseFile(options.sudoFile)
+    sudo_parse.parseFile(options.sudoFile, expandaliases=options.expandaliases)
     if options.verbose:
-        print(sudo_parse.aliases["user"])
-        print(sudo_parse.aliases["host"])
-        print(sudo_parse.aliases["cmnd"])
-        print(sudo_parse.aliases["runas"])
+        #print(sudo_parse.aliases["user"])
+        #print(sudo_parse.aliases["host"])
+        #print(sudo_parse.aliases["cmnd"])
+        #print(sudo_parse.aliases["runas"])
         for rule in sudo_parse.rules:
+            print("")
             rule.dump()
+        exit(0)
 
     if options.sudoers:
         display = SudoersDisplay(sudo_parse, False)
@@ -54,7 +59,8 @@ def main():
 
     #if options.ansible:
     else:
-        play = AnsiblePlaybook(sudo_parse)
+        filename = os.path.basename( options.sudoFile)
+        play = AnsiblePlaybook(sudo_parse, description="generated from %s"% filename)
         play.dump()
 
 

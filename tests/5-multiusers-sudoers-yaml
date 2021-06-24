@@ -1,0 +1,121 @@
+- name: /sbin/ifconfig
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /sbin/ifconfig
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /sbin/dhclient
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /sbin/dhclient
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /sbin/iwconfig
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /sbin/iwconfig
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /usr/bin/virsh
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /usr/bin/virsh
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /usr/bin/wvdial
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /usr/bin/wvdial
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /sbin/route
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /sbin/route
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /usr/bin/rfcomm
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /usr/bin/rfcomm
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /sbin/iptables
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /sbin/iptables
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /bin/ping
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /bin/ping
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /usr/bin/net
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /usr/bin/net
+    state: present
+    description: generated from 5-multiusers-sudoers
+- name: /sbin/mii-tool
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /sbin/mii-tool
+    state: present
+    description: generated from 5-multiusers-sudoers
+
+- name: NETWORKING
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: NETWORKING
+    sudocmd:
+    - /sbin/route
+    - /sbin/ifconfig
+    - /bin/ping
+    - /sbin/dhclient
+    - /usr/bin/net
+    - /sbin/iptables
+    - /usr/bin/rfcomm
+    - /usr/bin/wvdial
+    - /sbin/iwconfig
+    - /sbin/mii-tool
+    state: present
+    description: generated from 5-multiusers-sudoers
+
+- name: 5-multiusers-sudoers.7-1.1
+  ipasudorule:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    state: present
+    name: 5-multiusers-sudoers.7-1.1
+    user:
+    - jsmith
+    - mikem
+    - admin
+    - fred
+    host:
+    - cluster1
+    - cluster2
+    - cluster3
+    runasuser:
+    - root
+    sudooption:
+    - '!authenticate'
+    allow_sudocmdgroup:
+    - NETWORKING
+    allow_sudocmd:
+    - /usr/bin/virsh
+

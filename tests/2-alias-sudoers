@@ -1,0 +1,2 @@
+Host_Alias	HACLUSTER = cluster1, cluster2, cluster3
+fencer	HACLUSTER=(root)	NOPASSWD:/usr/bin/virsh
