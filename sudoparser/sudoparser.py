@@ -33,7 +33,7 @@ class SudoParser:
         return fh.readlines()
 
 
-    def parseFile(self, filename):
+    def parseFile(self, filename, expandaliases=False):
         self.filename = os.path.basename(filename)
         lines = self._readfile(filename)
         lines = self._collapse_lines(lines)
@@ -73,10 +73,10 @@ class SudoParser:
                 continue
 
             ## if its not a comment, a default, or an alias, its probably a rule
-            rule = self.parse_rule(lineno, line)
+            rule = self.parse_rule(lineno, line, expandaliases)
 
 
-    def parse_rule(self, lineno, line):
+    def parse_rule(self, lineno, line, expandaliases):
 
         userRE = re.compile(r"(?<!,)+\s+")
         cmdRE = re.compile(r" : \s*(?![^()]*\))")
@@ -102,12 +102,25 @@ class SudoParser:
             prev_tag_spec = []
 
             cmd_spec_no = 0
+            rule = None
             while cmnd_spec_list is not None:
                 cmd_spec_no += 1
                 ## a command_spec_list is a comma seperated list of command_specs
                 ## a command_spec is  Runas_Spec? Option_Spec* Tag_Spec* Cmnd
                 cmnd_spec, cmnd_spec_list = self.parse_cmnd_spec_list(cmnd_spec_list)
                 runas_spec, tag_spec, cmnds = self.parse_cmnd_spec(cmnd_spec)
+                
+                ## if this command spec is the same as just a command 
+                ## just merge it into the last rule
+                if runas_spec == None and tag_spec == [] and rule:
+                    if cmnds in self.aliases['cmnd']:
+                        rule.cmdgroup.append(cmnds)
+                    else:
+                        rule.command.append(cmnds)
+
+                    rule.command_expanded += self.expand_aliases("cmnd", cmnds)
+                    continue
+
                 ## runas_specs and tags like NOEXEC effect all the command_spec's that come after them in the rule
                 ## so if its not set then use the previous ones
                 if runas_spec == None:
@@ -124,17 +137,21 @@ class SudoParser:
                 runas_users, runas_groups = self.parse_runas_list(runas_spec)
 
                 rule = SudoRule("{}.{}-{}.{}".format(self.filename, lineno, command_no, cmd_spec_no))
-                self.rules.append(rule)
                 rule.users = self.expand_aliases("user",users) #users
                 rule.hosts = self.expand_aliases("host",hosts) #hosts
                 rule.runas_user = self.expand_aliases("runas",runas_users) #runas_users
-                rule.runas_group =self.expand_aliases("runas",runas_groups)  #runas_groups
+                rule.runas_group = self.expand_aliases("runas",runas_groups)  #runas_groups
+                #rule.command = [cmnds]
+                rule.command_expanded = self.expand_aliases("cmnd", cmnds)
                 rule.options = tag_spec
-                #rule.cmdgroups = [ SudoCmdGroup(c) for c in cmnds.split(",") if c in self.aliases['cmnd'].keys() ]
-                #rule.command = [ c for c in cmnds.split(",") if c not in self.aliases['cmnd'].keys() ]
-                #rule.command_expanded = [ SudoCmd(c) for c in  self.expand_aliases("cmnd", rule.command) ]
-                rule.command = [cmnds] # self.expand_aliases("cmnd",[cmnds])
-                rule.command_expanded = self.expand_aliases("cmnd", rule.command)
+
+                if cmnds in self.aliases['cmnd']:
+                    rule.cmdgroup.append(cmnds)
+                else:
+                    rule.command.append(cmnds)
+
+                self.rules.append(rule)
+
                 #for c in rule.command_expanded:
                 #    if c != "ALL":
                 #        self.commands[c] = SudoCmd(c)
@@ -153,6 +170,8 @@ class SudoParser:
         denied = 0
         if object_array == None:
             return None
+        if type(object_array) is str:
+            object_array = [object_array]
         for obj in object_array:
             ## if the alias is denied then all the expanded values should be
             if obj[0] == "!":

@@ -12,48 +12,42 @@ class AnsiblePlaybook:
         self.description = description
 
     def dump(self):
-#        print(self.parser.aliases['host'])
-#        print(self.parser.aliases['runas'])
-#        print(self.parser.aliases['user'])
-#        print(self.parser.aliases['cmnd'])
-#        
-#        cmds = set()
-#        for i in self.parser.rules:
-#            cmds = cmds.union(i.get_raw_command_expanded())
-#        cmds.remove('ALL')
-#        #print(cmds)
-#        for c in cmds:
-#            #print(c)
-#            self.dump_command(c)
-#
-#        for group,commands in self.parser.aliases['cmnd'].items():
-#            print(self.dump_cmdgroup(group, commands))
-#                
-#
-#        return
-
         noalias_dumper = yaml.dumper.SafeDumper
         noalias_dumper.ignore_aliases = lambda self, data: True
 
+
+        #for i in self.parser.rules:
+        #    print(i.dump())
+        #return
+
+        # parse commands out of serialised rules
+
+        # turn the command aliases into gmdgroups
         commands = []
         cmdgroup = []
+
+        for rule in self.parser.rules:
+            commands += rule.get_raw_command_expanded()
+        cmndtasks = [ self.dump_command(c) for c in set(commands) if c != "ALL" ]
+
         #print(self.parser.aliases['cmnd'])
         for group,cmds in self.parser.aliases['cmnd'].items():
             cmdgroup.append(self.dump_cmdgroup(group, cmds))
-            if cmds[0] != "!":
-                commands.extend(cmds)
+            #if cmds[0] != "!":
+            #    commands.extend(cmds)
 
+        # turn the serialised rules into ansible sudorules
         allrules = []
         for rule in self.parser.rules:
             ansiblerule = self.dump_sudorule(rule) 
             if ansiblerule != None:
                 allrules.append(ansiblerule)
-            if self.use_groups == False:
-                commands.extend(rule.get_command_expanded())
-            else:
-                commands.extend(rule.get_commands())
+            #if self.use_groups == False:
+            #    commands.extend(rule.get_command_expanded())
+            #else:
+            #    commands.extend(rule.get_commands())
+
         
-        cmndtasks = [ self.dump_command(c) for c in set(commands) if c != "ALL" ]
         if cmndtasks != []:
             print(yaml.dump(cmndtasks, sort_keys=False, default_flow_style=False, Dumper=noalias_dumper))
         if cmdgroup != []:
@@ -107,16 +101,63 @@ class AnsiblePlaybook:
                 "name": rule.rulename,
             }}
 
-        if self.description != None:
-            sudorule["ipasudorule"]["description"] = self.description
+        #print(rule.__dict__)
+        #print([f for f in dir(rule) if f.startswith('get_')])
+        #if rule.description != None:
+        #    sudorule["ipasudorule"]["description"] = rule.description
 
-        opts = rule.get_sudo_options()
-        if opts:
-            sudorule["ipasudorule"]["sudooption"] = opts
+        if rule.get_allowed_users():
+            if "ALL" in rule.get_allowed_users():
+                sudorule["ipasudorule"]["usercategory"] = "all"
+            else:
+                sudorule["ipasudorule"]["user"] = rule.get_allowed_users()
 
-        self.dump_ansible_type(sudorule["ipasudorule"], "cmd", "", rule.get_command_expanded())
-        self.dump_ansible_type(sudorule["ipasudorule"], "host", '+', validhosts)
-        self.dump_ansible_type(sudorule["ipasudorule"], "user", '%+', rule.get_allowed_users())
+        if rule.get_allowed_groups():
+            sudorule["ipasudorule"]["group"] = rule.get_allowed_groups()
+            
+        if rule.get_allowed_hosts():
+            if "ALL" in rule.get_allowed_hosts():
+                sudorule["ipasudorule"]["hostcategory"] = "all"
+            else:
+                sudorule["ipasudorule"]["host"] = rule.get_allowed_hosts()
+        #if rule.get_allowed_hostgroups():
+        #    sudorule["ipasudorule"]["hostgroups"] = rule.get_allowed_hostgroups()
+
+        if rule.get_allowed_runas_users():
+            if "ALL" in rule.get_allowed_runas_users():
+                sudorule["ipasudorule"]["runasusercategory"] = "all"
+            else:
+                sudorule["ipasudorule"]["runasuser"] = rule.get_allowed_runas_users()
+
+        if rule.get_allowed_runas_groups():
+            if "ALL" in rule.get_allowed_runas_groups():
+                sudorule["ipasudorule"]["runasgroupcategory"] = "all"
+            else:
+                sudorule["ipasudorule"]["runasgroupcategory"] = rule.get_allowed_runas_groups()
+
+        if rule.get_sudo_options():
+            sudorule["ipasudorule"]["sudooption"] = rule.get_sudo_options()
+
+        
+        if rule.get_allowed_commands():
+            if "ALL" in rule.get_allowed_commands():
+                sudorule["ipasudorule"]["cmdcategory"] = "all"
+            else:
+                if rule.get_allowed_cmdgroups():
+                    sudorule["ipasudorule"]["allow_sudocmdgroup"] = rule.get_allowed_cmdgroups()
+                sudorule["ipasudorule"]["allow_sudocmd"] = rule.get_allowed_commands()
+
+        if rule.get_denied_commands():
+            sudorule["ipasudorule"]["deny_sudocmd"] = rule.get_denied_commands()
+
+
+        if rule.get_denied_cmdgroups():
+            sudorule["ipasudorule"]["deny_sudocmdgroup"] = rule.get_allowed_commands()
+        
+    
+        #self.dump_ansible_type(sudorule["ipasudorule"], "cmd", "", rule.get_command_expanded())
+        #self.dump_ansible_type(sudorule["ipasudorule"], "host", '+', validhosts)
+        #self.dump_ansible_type(sudorule["ipasudorule"], "user", '%+', rule.get_allowed_users())
 
         return sudorule
 
