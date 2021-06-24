@@ -1,0 +1,2 @@
+ALL,!wheel	ALL=(ALL)	ALL, !/usr/bin/virsh
+

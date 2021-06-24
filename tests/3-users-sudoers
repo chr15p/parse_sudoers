@@ -1,0 +1,8 @@
+Host_Alias	HACLUSTER = cluster1, cluster2, cluster3
+
+User_Alias ADMINS = jsmith, mikem
+
+Cmnd_Alias NETWORKING = /sbin/route, /sbin/ifconfig, /bin/ping, /sbin/dhclient, /usr/bin/net, /sbin/iptables, /usr/bin/rfcomm, /usr/bin/wvdial, /sbin/iwconfig, /sbin/mii-tool
+
+ADMINS,admin,!fred	HACLUSTER=(root)	NOPASSWD:NETWORKING,/usr/bin/virsh
+

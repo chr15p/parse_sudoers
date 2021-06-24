@@ -1,0 +1,49 @@
+- name: /usr/bin/virsh
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: /usr/bin/virsh
+    state: present
+    description: generated from 7-test_simple-sudoers
+
+- name: 7-test_simple-sudoers.77-1.1
+  ipasudorule:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    state: present
+    name: 7-test_simple-sudoers.77-1.1
+    user:
+    - root
+    hostcategory: all
+    runasusercategory: all
+    cmdcategory: all
+- name: 7-test_simple-sudoers.84-1.1
+  ipasudorule:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    state: present
+    name: 7-test_simple-sudoers.84-1.1
+    group:
+    - wheel
+    hostcategory: all
+    runasusercategory: all
+    cmdcategory: all
+- name: 7-test_simple-sudoers.100-1.1
+  ipasudorule:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    state: present
+    name: 7-test_simple-sudoers.100-1.1
+    user:
+    - fencer
+    host:
+    - cluster1
+    - cluster2
+    - cluster3
+    runasuser:
+    - root
+    sudooption:
+    - '!authenticate'
+    allow_sudocmd:
+    - /usr/bin/virsh
+

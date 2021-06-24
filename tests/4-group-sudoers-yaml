@@ -1,0 +1,12 @@
+- name: 4-group-sudoers.1-1.1
+  ipasudorule:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    state: present
+    name: 4-group-sudoers.1-1.1
+    group:
+    - wheel
+    hostcategory: all
+    runasusercategory: all
+    cmdcategory: all
+
