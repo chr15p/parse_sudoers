@@ -28,9 +28,16 @@ class AnsiblePlaybook:
 
         for rule in self.parser.rules:
             commands += rule.get_raw_command_expanded()
-        cmndtasks = [ self.dump_command(c) for c in set(commands) if c != "ALL" ]
 
-        #print(self.parser.aliases['cmnd'])
+        for c in self.parser.aliases['cmnd'].values():
+            commands += c 
+        #cmndtasks = [ self.dump_command(c) for c in set(commands) if c != "ALL" ]
+        cmndtasks = self.dump_command(set(commands))
+
+
+        #print(commands)
+        #print(cmndtasks)
+        #return
         for group,cmds in self.parser.aliases['cmnd'].items():
             cmdgroup.append(self.dump_cmdgroup(group, cmds))
             #if cmds[0] != "!":
@@ -58,16 +65,16 @@ class AnsiblePlaybook:
 
     def dump_command(self, cmd):
         cmd = {
-            "name": cmd,
+            "name": "add commands",
             "ipasudocmd": {
                 "ipaadmin_principal": "{{ ipa_user }}",
                 "ipaadmin_password": "{{ ipa_pass }}",
-                "name": cmd,
+                "name": list(cmd),
                 "state": "present" }}
         if self.description != None:
             cmd["ipasudocmd"]["description"] = self.description
         
-        return cmd
+        return [cmd]
  
 
     def dump_cmdgroup(self, group, cmnds):
@@ -131,9 +138,9 @@ class AnsiblePlaybook:
 
         if rule.get_allowed_runas_groups():
             if "ALL" in rule.get_allowed_runas_groups():
-                sudorule["ipasudorule"]["runasgroupcategory"] = "all"
+                sudorule["ipasudorule"]["runasgroup"] = "all"
             else:
-                sudorule["ipasudorule"]["runasgroupcategory"] = rule.get_allowed_runas_groups()
+                sudorule["ipasudorule"]["runasgroup"] = rule.get_allowed_runas_groups()
 
         if rule.get_sudo_options():
             sudorule["ipasudorule"]["sudooption"] = rule.get_sudo_options()
@@ -152,7 +159,8 @@ class AnsiblePlaybook:
 
 
         if rule.get_denied_cmdgroups():
-            sudorule["ipasudorule"]["deny_sudocmdgroup"] = rule.get_allowed_commands()
+            #sudorule["ipasudorule"]["deny_sudocmdgroup"] = rule.get_allowed_commands()
+            sudorule["ipasudorule"]["deny_sudocmdgroup"] = rule.get_denied_cmdgroups()
         
     
         #self.dump_ansible_type(sudorule["ipasudorule"], "cmd", "", rule.get_command_expanded())
