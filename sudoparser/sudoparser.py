@@ -85,6 +85,7 @@ class SudoParser:
         #print("++++++++++++++++")
         #print(line)
         user_spec = userRE.split(line,1)
+        #print(user_spec)
         user_list = user_spec[0]
         users = listRE.split(user_list)
         rest = user_spec[1]
@@ -113,7 +114,7 @@ class SudoParser:
                 ## if this command spec is the same as just a command 
                 ## just merge it into the last rule
                 if runas_spec == None and tag_spec == [] and rule:
-                    if cmnds in self.aliases['cmnd']:
+                    if cmnds in self.aliases['cmnd'] or (cmnds[0]=="!" and cmnds[1:] in self.aliases['cmnd']):
                         rule.cmdgroup.append(cmnds)
                     else:
                         rule.command.append(cmnds)
@@ -145,7 +146,7 @@ class SudoParser:
                 rule.command_expanded = self.expand_aliases("cmnd", cmnds)
                 rule.options = tag_spec
 
-                if cmnds in self.aliases['cmnd']:
+                if cmnds in self.aliases['cmnd'] or (cmnds[0]=="!" and cmnds[1:] in self.aliases['cmnd']) :
                     rule.cmdgroup.append(cmnds)
                 else:
                     rule.command.append(cmnds)

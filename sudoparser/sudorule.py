@@ -108,9 +108,9 @@ class SudoRule:
         output = []
         for obj in self.command:
             if obj[0] == '!':
-                output.append(obj[1:])
+                output.append(obj[1:].replace("\\,",","))
             else:
-                output.append(obj)
+                output.append(obj.replace("\\,",","))
 
         return output
 
@@ -118,9 +118,9 @@ class SudoRule:
         output = []
         for obj in self.command_expanded:
             if obj[0] == '!':
-                output.append(obj[1:])
+                output.append(obj[1:].replace("\\,",","))
             else:
-                output.append(obj)
+                output.append(obj.replace("\\,",","))
 
         return output
 
@@ -140,9 +140,9 @@ class SudoRule:
     def _setup_commands(self):
         for obj in self.command:
             if obj[:1] == '!':
-                self.deniedcommand.append(obj[1:]) 
+                self.deniedcommand.append(obj[1:].replace("\\,",","))
             else:
-                self.allowedcommand.append(obj) 
+                self.allowedcommand.append(obj.replace("\\,",","))
         self._setupcommands = True
 
     def _setup_cmdgroups(self):
