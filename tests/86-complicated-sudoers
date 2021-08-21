@@ -1,0 +1,7 @@
+ 
+ Host_Alias	SPARC = bigtime, eclipse, moet, anchor:\
+ 		SGI = grolsch, dandelion, black:\
+ 		ALPHA = widget, thalamus, foobar:\
+ 		HPPA = boa, nag, python
+
+pete		HPPA = /usr/bin/passwd [A-Za-z]*, !/usr/bin/passwd *root*

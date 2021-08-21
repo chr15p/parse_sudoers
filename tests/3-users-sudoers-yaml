@@ -1,78 +1,19 @@
-- name: /sbin/iptables
+- name: add commands
   ipasudocmd:
     ipaadmin_principal: '{{ ipa_user }}'
     ipaadmin_password: '{{ ipa_pass }}'
-    name: /sbin/iptables
-    state: present
-    description: generated from 3-users-sudoers
-- name: /sbin/iwconfig
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /sbin/iwconfig
-    state: present
-    description: generated from 3-users-sudoers
-- name: /usr/bin/virsh
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /usr/bin/virsh
-    state: present
-    description: generated from 3-users-sudoers
-- name: /bin/ping
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /bin/ping
-    state: present
-    description: generated from 3-users-sudoers
-- name: /usr/bin/rfcomm
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /usr/bin/rfcomm
-    state: present
-    description: generated from 3-users-sudoers
-- name: /sbin/mii-tool
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /sbin/mii-tool
-    state: present
-    description: generated from 3-users-sudoers
-- name: /usr/bin/net
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /usr/bin/net
-    state: present
-    description: generated from 3-users-sudoers
-- name: /sbin/ifconfig
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /sbin/ifconfig
-    state: present
-    description: generated from 3-users-sudoers
-- name: /sbin/route
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /sbin/route
-    state: present
-    description: generated from 3-users-sudoers
-- name: /usr/bin/wvdial
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /usr/bin/wvdial
-    state: present
-    description: generated from 3-users-sudoers
-- name: /sbin/dhclient
-  ipasudocmd:
-    ipaadmin_principal: '{{ ipa_user }}'
-    ipaadmin_password: '{{ ipa_pass }}'
-    name: /sbin/dhclient
+    name:
+    - /sbin/route
+    - /sbin/mii-tool
+    - /usr/bin/net
+    - /bin/ping
+    - /sbin/iwconfig
+    - /sbin/iptables
+    - /sbin/dhclient
+    - /usr/bin/rfcomm
+    - /usr/bin/wvdial
+    - /sbin/ifconfig
+    - /usr/bin/virsh
     state: present
     description: generated from 3-users-sudoers
 

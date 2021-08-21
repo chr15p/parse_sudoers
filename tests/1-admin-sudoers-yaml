@@ -1,3 +1,11 @@
+- name: add commands
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: []
+    state: present
+    description: generated from 1-admin-sudoers
+
 - name: 1-admin-sudoers.1-1.1
   ipasudorule:
     ipaadmin_principal: '{{ ipa_user }}'

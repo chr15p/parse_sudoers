@@ -74,6 +74,9 @@ class AnsiblePlaybook:
         if self.description != None:
             cmd["ipasudocmd"]["description"] = self.description
         
+        if 'ALL' in cmd["ipasudocmd"]["name"]:
+            cmd["ipasudocmd"]["name"].remove('ALL')
+
         return [cmd]
  
 
