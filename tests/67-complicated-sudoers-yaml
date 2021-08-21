@@ -2,27 +2,24 @@
   ipasudocmd:
     ipaadmin_principal: '{{ ipa_user }}'
     ipaadmin_password: '{{ ipa_pass }}'
-    name:
-    - /usr/bin/virsh
+    name: []
     state: present
-    description: generated from 2-alias-sudoers
+    description: generated from 67-complicated-sudoers
 
-- name: 2-alias-sudoers.2-1.1
+- name: 67-complicated-sudoers.3-1.1
   ipasudorule:
     ipaadmin_principal: '{{ ipa_user }}'
     ipaadmin_password: '{{ ipa_pass }}'
     state: present
-    name: 2-alias-sudoers.2-1.1
+    name: 67-complicated-sudoers.3-1.1
     user:
-    - fencer
-    host:
-    - cluster1
-    - cluster2
-    - cluster3
+    - millert
+    - mikef
+    - dowdy
+    hostcategory: all
     runasuser:
     - root
     sudooption:
     - '!authenticate'
-    allow_sudocmd:
-    - /usr/bin/virsh
+    cmdcategory: all
 

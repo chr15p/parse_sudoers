@@ -1,0 +1,158 @@
+- name: add commands
+  ipasudocmd:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name:
+    - /usr/bin/more
+    - /usr/sbin/restore
+    - /usr/bin/top
+    - /usr/sbin/shutdown
+    - /usr/bin/su
+    - /home/operator/bin/start_backups
+    - /usr/bin/pg
+    - /usr/sbin/dump
+    - /usr/bin/mt
+    - /usr/local/bin/tcsh
+    - /usr/local/bin/zsh
+    - /usr/bin/ksh
+    - /usr/bin/csh
+    - /usr/bin/chsh
+    - /usr/bin/kill
+    - /usr/sbin/rdump
+    - /usr/sbin/rrestore
+    - /usr/bin/less
+    - /usr/bin/chfn
+    - /usr/bin/lprm
+    - /usr/sbin/reboot
+    - /usr/sbin/lpc
+    - /usr/sbin/halt
+    - /usr/bin/passwd
+    - /usr/bin/rsh
+    - /usr/sbin/vipw
+    - /usr/bin/sh
+    - /sbin/sh
+    state: present
+    description: generated from 107-complicated-sudoers
+
+- name: DUMPS
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: DUMPS
+    sudocmd:
+    - /usr/sbin/dump
+    - /usr/sbin/rdump
+    - /usr/sbin/restore
+    - /usr/sbin/rrestore
+    - /usr/bin/mt
+    - /home/operator/bin/start_backups
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: KILL
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: KILL
+    sudocmd:
+    - /usr/bin/kill
+    - /usr/bin/top
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: PRINTING
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: PRINTING
+    sudocmd:
+    - /usr/sbin/lpc
+    - /usr/bin/lprm
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: SHUTDOWN
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: SHUTDOWN
+    sudocmd:
+    - /usr/sbin/shutdown
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: HALT
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: HALT
+    sudocmd:
+    - /usr/sbin/halt
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: REBOOT
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: REBOOT
+    sudocmd:
+    - /usr/sbin/reboot
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: SHELLS
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: SHELLS
+    sudocmd:
+    - /sbin/sh
+    - /usr/bin/sh
+    - /usr/bin/csh
+    - /usr/bin/ksh
+    - /usr/local/bin/tcsh
+    - /usr/bin/rsh
+    - /usr/local/bin/zsh
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: SU
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: SU
+    sudocmd:
+    - /usr/bin/su
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: VIPW
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: VIPW
+    sudocmd:
+    - /usr/sbin/vipw
+    - /usr/bin/passwd
+    - /usr/bin/chsh
+    - /usr/bin/chfn
+    state: present
+    description: generated from 107-complicated-sudoers
+- name: PAGERS
+  ipasudocmdgroup:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    name: PAGERS
+    sudocmd:
+    - /usr/bin/more
+    - /usr/bin/pg
+    - /usr/bin/less
+    state: present
+    description: generated from 107-complicated-sudoers
+
+- name: 107-complicated-sudoers.33-1.1
+  ipasudorule:
+    ipaadmin_principal: '{{ ipa_user }}'
+    ipaadmin_password: '{{ ipa_pass }}'
+    state: present
+    name: 107-complicated-sudoers.33-1.1
+    user:
+    - jen
+    hostcategory: all
+    runasuser:
+    - root
+    cmdcategory: all
+

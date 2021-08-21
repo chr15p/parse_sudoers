@@ -1,8 +1,9 @@
-- name: /usr/bin/virsh
+- name: add commands
   ipasudocmd:
     ipaadmin_principal: '{{ ipa_user }}'
     ipaadmin_password: '{{ ipa_pass }}'
-    name: /usr/bin/virsh
+    name:
+    - /usr/bin/virsh
     state: present
     description: generated from 7-test_simple-sudoers
 

@@ -3,26 +3,21 @@
     ipaadmin_principal: '{{ ipa_user }}'
     ipaadmin_password: '{{ ipa_pass }}'
     name:
-    - /usr/bin/virsh
+    - /usr/bin/su operator
     state: present
-    description: generated from 2-alias-sudoers
+    description: generated from 83-complicated-sudoers
 
-- name: 2-alias-sudoers.2-1.1
+- name: 83-complicated-sudoers.1-1.1
   ipasudorule:
     ipaadmin_principal: '{{ ipa_user }}'
     ipaadmin_password: '{{ ipa_pass }}'
     state: present
-    name: 2-alias-sudoers.2-1.1
+    name: 83-complicated-sudoers.1-1.1
     user:
-    - fencer
-    host:
-    - cluster1
-    - cluster2
-    - cluster3
+    - joe
+    hostcategory: all
     runasuser:
     - root
-    sudooption:
-    - '!authenticate'
     allow_sudocmd:
-    - /usr/bin/virsh
+    - /usr/bin/su operator
 

@@ -1,0 +1,3 @@
+ Host_Alias	CUNETS = 128.138.0.0/255.255.0.0
+
+lisa		CUNETS = ALL
