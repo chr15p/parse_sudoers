@@ -22,6 +22,8 @@ def create_option_parser():
     parser = OptionParser(usage="%prog [options] -u user")
     parser.add_option("-f", "--file", dest="sudoFile", metavar="FILE",
                       help="sudoers file to parser (default /etc/sudoers)", default="/etc/sudoers")
+    parser.add_option("-p", "--prepend", dest="prepend", metavar="STRING",
+                      help="String to prepend to rule names")
     parser.add_option("-x", "--expand", dest="expandaliases", action="store_true",
                       help="expand aliases in rules")
     parser.add_option("-a", "--ansible", dest="ansible", action="store_true",
@@ -40,7 +42,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    sudo_parse = SudoParser()
+    sudo_parse = SudoParser(options.prepend)
 
     sudo_parse.parseFile(options.sudoFile, expandaliases=options.expandaliases)
     if options.verbose:

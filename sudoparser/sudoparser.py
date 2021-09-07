@@ -16,8 +16,13 @@ from sudoparser.sudorule import SudoRule
 
 
 class SudoParser:
-    def __init__(self):
+    def __init__(self, prepend):
         self.filename = ""
+        if prepend:
+            self.prepend = prepend + "-"
+        else:
+            self.prepend = ""
+
         self.aliases = dict()
         self.aliases['host'] = dict()
         self.aliases['user'] = dict()
@@ -137,7 +142,7 @@ class SudoParser:
                 ## the runas_spec can be user_list : group_list  where lists are comma sperated
                 runas_users, runas_groups = self.parse_runas_list(runas_spec)
 
-                rule = SudoRule("{}.{}-{}.{}".format(self.filename, lineno, command_no, cmd_spec_no))
+                rule = SudoRule("{}{}.{}-{}.{}".format(self.prepend, self.filename, lineno, command_no, cmd_spec_no))
                 rule.users = self.expand_aliases("user",users) #users
                 rule.hosts = self.expand_aliases("host",hosts) #hosts
                 rule.runas_user = self.expand_aliases("runas",runas_users) #runas_users
